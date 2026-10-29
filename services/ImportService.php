@@ -234,11 +234,43 @@ class ImportService {
                 $importedCount++;
             }
 
+            // Record import job in import_jobs table
+            $jobStmt = $this->db->prepare("
+                INSERT INTO import_jobs (
+                    user_id, import_type, filename, total_rows, successful_rows, failed_rows, status, created_at, completed_at
+                ) VALUES (
+                    :uid, 'expenses', :fname, :tot, :succ, :fail, 'completed', NOW(), NOW()
+                )
+            ");
+            $jobStmt->execute([
+                ':uid' => $userId,
+                ':fname' => basename($filePath),
+                ':tot' => $importedCount + count($errors),
+                ':succ' => $importedCount,
+                ':fail' => count($errors)
+            ]);
+            $jobId = (int)$this->db->lastInsertId();
+
+            if (!empty($errors)) {
+                $errStmt = $this->db->prepare("
+                    INSERT INTO import_errors (import_job_id, row_number, error_message, created_at)
+                    VALUES (:jid, :rnum, :msg, NOW())
+                ");
+                foreach ($errors as $idx => $errMsg) {
+                    $errStmt->execute([
+                        ':jid' => $jobId,
+                        ':rnum' => $idx + 1,
+                        ':msg' => $errMsg
+                    ]);
+                }
+            }
+
             $this->db->commit();
-            logAudit($userId, 'IMPORT_CSV_EXPENSES', 'expenses', null, "Imported {$importedCount} transactions via CSV.");
+            logAudit($userId, 'IMPORT_CSV_EXPENSES', 'expenses', $jobId, "Imported {$importedCount} transactions via CSV.");
 
             return [
                 'success' => true,
+                'job_id' => $jobId,
                 'imported_count' => $importedCount,
                 'failed_count' => count($errors),
                 'errors' => $errors

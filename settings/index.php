@@ -52,6 +52,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $passwordErrors[] = $res['error'];
         }
+    } elseif ($formType === 'deactivate') {
+        $confirmPass = $_POST['deactivate_password'] ?? '';
+        $res = $authService->deactivateAccount($userId, $confirmPass);
+        if ($res['success']) {
+            logoutUser();
+            setFlash('info', 'Your account has been deactivated.');
+            header('Location: ' . url('login.php'));
+            exit;
+        } else {
+            $passwordErrors[] = $res['error'];
+        }
     }
 }
 
@@ -154,6 +165,40 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-ebap px-4">Update Password</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Section 3: Personal Data Export & Account Governance -->
+        <div class="ebap-card bg-white p-4 p-md-5 mb-4 shadow-sm">
+            <h5 class="fw-bold text-dark mb-1 fs-6">Data Export & Account Governance</h5>
+            <p class="text-muted fs-7 mb-3">Download your complete transaction history or deactivate your account.</p>
+
+            <div class="d-flex flex-wrap gap-2 pb-4 mb-4 border-bottom">
+                <a href="<?= url('reports/export.php?type=expenses') ?>" class="btn btn-sm btn-ebap-outline">
+                    <i class="bi bi-download me-1"></i> Export All Expenses (CSV)
+                </a>
+                <a href="<?= url('reports/export.php?type=income') ?>" class="btn btn-sm btn-ebap-outline">
+                    <i class="bi bi-download me-1"></i> Export All Income (CSV)
+                </a>
+                <a href="<?= url('reports/index.php') ?>" class="btn btn-sm btn-ebap-outline">
+                    <i class="bi bi-printer me-1"></i> Printable Financial Report
+                </a>
+            </div>
+
+            <h6 class="fw-bold text-danger fs-7 mb-1">Deactivate Account</h6>
+            <p class="text-secondary fs-7 mb-3">Deactivating your account suspends login access while preserving historical audit integrity. Confirm with your current password to proceed.</p>
+
+            <form method="POST" action="<?= url('settings/index.php') ?>" class="row g-2 align-items-center" data-confirm="Are you sure you want to deactivate your account?">
+                <?= getCsrfInput() ?>
+                <input type="hidden" name="form_type" value="deactivate">
+                <div class="col-sm-7">
+                    <input type="password" name="deactivate_password" class="form-control form-control-sm" placeholder="Enter current password to confirm..." required>
+                </div>
+                <div class="col-sm-5">
+                    <button type="submit" class="btn btn-sm btn-outline-danger w-100">
+                        <i class="bi bi-person-x me-1"></i> Deactivate Account
+                    </button>
                 </div>
             </form>
         </div>

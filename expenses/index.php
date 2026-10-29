@@ -101,12 +101,40 @@ require_once __DIR__ . '/../includes/header.php';
             </select>
         </div>
 
-        <div class="col-md-1 d-flex gap-1">
-            <button type="submit" class="btn btn-sm btn-ebap w-100" title="Apply Filter">
-                <i class="bi bi-filter"></i>
+        <div class="col-md-2">
+            <label class="form-label fs-7 fw-semibold text-secondary mb-1">Min Amount</label>
+            <input type="number" step="0.01" min="0" name="min_amount" class="form-control form-control-sm" placeholder="0.00" value="<?= e($filters['min_amount']) ?>">
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label fs-7 fw-semibold text-secondary mb-1">Max Amount</label>
+            <input type="number" step="0.01" min="0" name="max_amount" class="form-control form-control-sm" placeholder="Any" value="<?= e($filters['max_amount']) ?>">
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label fs-7 fw-semibold text-secondary mb-1">Sort By</label>
+            <select name="sort" class="form-select form-select-sm">
+                <option value="date" <?= ($filters['sort'] === 'date') ? 'selected' : '' ?>>Date</option>
+                <option value="amount" <?= ($filters['sort'] === 'amount') ? 'selected' : '' ?>>Amount</option>
+                <option value="title" <?= ($filters['sort'] === 'title') ? 'selected' : '' ?>>Title</option>
+                <option value="category" <?= ($filters['sort'] === 'category') ? 'selected' : '' ?>>Category</option>
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label class="form-label fs-7 fw-semibold text-secondary mb-1">Order</label>
+            <select name="order" class="form-select form-select-sm">
+                <option value="desc" <?= ($filters['order'] === 'desc') ? 'selected' : '' ?>>Descending</option>
+                <option value="asc" <?= ($filters['order'] === 'asc') ? 'selected' : '' ?>>Ascending</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-sm btn-ebap flex-grow-1" title="Apply Filter">
+                <i class="bi bi-filter me-1"></i> Filter & Sort
             </button>
-            <a href="<?= url('expenses/index.php') ?>" class="btn btn-sm btn-light border" title="Clear Filters">
-                <i class="bi bi-arrow-counterclockwise"></i>
+            <a href="<?= url('expenses/index.php') ?>" class="btn btn-sm btn-light border px-3" title="Clear Filters">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset
             </a>
         </div>
     </form>
@@ -176,6 +204,9 @@ require_once __DIR__ . '/../includes/header.php';
                             </td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm">
+                                    <a href="<?= url('expenses/view.php?id=' . $r['id']) ?>" class="btn btn-light border" title="View Details">
+                                        <i class="bi bi-eye text-primary"></i>
+                                    </a>
                                     <a href="<?= url('expenses/edit.php?id=' . $r['id']) ?>" class="btn btn-light border" title="Edit Expense">
                                         <i class="bi bi-pencil text-secondary"></i>
                                     </a>

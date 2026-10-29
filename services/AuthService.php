@@ -208,4 +208,29 @@ class AuthService {
 
         return ['success' => true];
     }
+
+    /**
+     * Deactivate user account after verifying current password
+     */
+    public function deactivateAccount(int $userId, string $password): array {
+        $stmt = $this->db->prepare("SELECT password_hash, email FROM users WHERE id = :id LIMIT 1");
+        $stmt->execute([':id' => $userId]);
+        $row = $stmt->fetch();
+
+        if (!$row || !password_verify($password, $row['password_hash'])) {
+            return ['success' => false, 'error' => 'Password verification failed. Account was not deactivated.'];
+        }
+
+        // Prevent deactivating the primary shared demo account during live evaluations
+        if ($row['email'] === 'demo@ebap.local') {
+            return ['success' => false, 'error' => 'The primary demonstration account cannot be deactivated during evaluation mode.'];
+        }
+
+        $updStmt = $this->db->prepare("UPDATE users SET account_status = 'inactive', updated_at = NOW() WHERE id = :id");
+        $updStmt->execute([':id' => $userId]);
+
+        logAudit($userId, 'DEACTIVATE_ACCOUNT', 'users', $userId, 'User deactivated their account.');
+
+        return ['success' => true];
+    }
 }

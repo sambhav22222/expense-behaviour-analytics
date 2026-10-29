@@ -83,6 +83,9 @@ function isSidebarActive(string $pattern, string $currentScript): bool {
         <a href="<?= url('settings/index.php') ?>" class="sidebar-link <?= isSidebarActive('/settings/', $currentScript) ? 'active' : '' ?>">
             <i class="bi bi-gear"></i> Settings
         </a>
+        <a href="<?= url('admin/index.php') ?>" class="sidebar-link <?= isSidebarActive('/admin/', $currentScript) ? 'active' : '' ?>">
+            <i class="bi bi-cpu"></i> System & Audit
+        </a>
     </div>
 
     <!-- Sidebar Bottom Footer -->

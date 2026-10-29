@@ -76,9 +76,9 @@ INSERT INTO `recurring_expenses` (`user_id`, `category_id`, `title`, `amount`, `
 
 -- 8. Financial Goals for User 1 (Demo)
 INSERT INTO `financial_goals` (`user_id`, `goal_name`, `goal_type`, `category_id`, `target_amount`, `baseline_amount`, `current_progress`, `start_date`, `target_date`, `status`, `description`) VALUES
-(1, 'Emergency Fund (6 Months Expenses)', 150000.00, NULL, 150000.00, 0.00, 85000.00, '2026-01-01', '2026-12-31', 'in_progress', 'Building personal safety net in liquid mutual funds'),
-(1, 'Reduce Restaurant Dining Expenses', 2, 6, 2500.00, 8500.00, 1800.00, '2026-10-01', '2026-10-31', 'in_progress', 'Aiming to cook more at home and cut dining costs by 30%'),
-(1, 'Annual Diwali Tech Gadget Fund', 1, NULL, 40000.00, 0.00, 32000.00, '2026-06-01', '2026-11-10', 'in_progress', 'Targeting new monitor and mechanical keyboard');
+(1, 'Emergency Fund (6 Months Expenses)', 'savings', NULL, 150000.00, 0.00, 85000.00, '2026-01-01', '2026-12-31', 'in_progress', 'Building personal safety net in liquid mutual funds'),
+(1, 'Reduce Restaurant Dining Expenses', 'spending_reduction', 6, 2500.00, 8500.00, 1800.00, '2026-10-01', '2026-10-31', 'in_progress', 'Aiming to cook more at home and cut dining costs by 30%'),
+(1, 'Annual Diwali Tech Gadget Fund', 'savings', NULL, 40000.00, 0.00, 32000.00, '2026-06-01', '2026-11-10', 'in_progress', 'Targeting new monitor and mechanical keyboard');
 
 -- 9. Goal Contributions
 INSERT INTO `goal_contributions` (`goal_id`, `user_id`, `amount`, `contribution_date`, `description`) VALUES
@@ -140,3 +140,13 @@ INSERT INTO `expenses` (`user_id`, `category_id`, `title`, `amount`, `transactio
 INSERT INTO `anomaly_reviews` (`user_id`, `expense_id`, `category_id`, `detection_method`, `baseline_value`, `observed_value`, `explanation`, `review_status`, `created_at`) VALUES
 (1, 31, 6, 'Category Statistical Outlier (Z-Score > 2.5x Median)', 1850.00, 5200.00, 'This transaction at Olive Bar & Kitchen (₹5,200.00) is 2.81x higher than your historical median dining transaction of ₹1,850.00 in Restaurants & Cafes.', 'pending', '2026-10-17 22:30:00'),
 (1, 35, 7, 'Sudden Category Spending Surge', 1400.00, 5400.00, 'Shopping & Apparel expenditure of ₹5,400.00 on 2026-10-25 significantly exceeded your typical single transaction baseline of ₹1,400.00.', 'reviewed', '2026-10-25 19:15:00');
+
+-- 12. Initial Seeded Behaviour Insights Snapshot
+INSERT INTO `behaviour_insights` (`user_id`, `insight_type`, `title`, `description`, `evidence_data`, `suggested_action`, `period_start`, `period_end`, `review_status`) VALUES
+(1, 'category_concentration', 'Housing & Utilities represents 39.9% of your October spending', 'During October 2026, you spent ₹20,979.00 across 3 transactions in Housing & Utilities.', 'Category Share = (₹20,979.00 / ₹52,578.00) × 100 = 39.9%', 'Monitor fixed utility bills and internet tariffs.', '2026-10-01', '2026-10-31', 'unread'),
+(1, 'budget_exceeded', 'Budget Exceeded: Restaurants & Dining Budget', 'You have spent ₹7,900.00 against your allocated limit of ₹7,000.00 (112.9% utilization).', 'Over budget by: ₹900.00', 'Review recent dining transactions and pause non-essential restaurant orders for the rest of the month.', '2026-10-01', '2026-10-31', 'unread');
+
+-- 13. Initial Notifications for Demo User
+INSERT INTO `notifications` (`user_id`, `title`, `message`, `notification_type`) VALUES
+(1, 'Dining Budget Threshold Exceeded', 'Your Restaurants & Dining spending (₹7,900.00) has exceeded the ₹7,000.00 monthly budget.', 'warning'),
+(1, 'Spending Outlier Flagged', 'A transaction of ₹5,200.00 at Olive Bar & Kitchen was flagged for your review.', 'info');

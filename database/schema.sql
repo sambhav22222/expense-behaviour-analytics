@@ -17,6 +17,10 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `audit_logs`;
 DROP TABLE IF EXISTS `login_attempts`;
 DROP TABLE IF EXISTS `user_settings`;
+DROP TABLE IF EXISTS `notifications`;
+DROP TABLE IF EXISTS `import_errors`;
+DROP TABLE IF EXISTS `import_jobs`;
+DROP TABLE IF EXISTS `behaviour_insights`;
 DROP TABLE IF EXISTS `anomaly_reviews`;
 DROP TABLE IF EXISTS `goal_contributions`;
 DROP TABLE IF EXISTS `financial_goals`;
@@ -245,6 +249,63 @@ CREATE TABLE `audit_logs` (
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
     INDEX `idx_audit_user_time` (`user_id`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 14. Behaviour Insights Persistence Table
+CREATE TABLE `behaviour_insights` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `insight_type` VARCHAR(50) NOT NULL,
+    `title` VARCHAR(200) NOT NULL,
+    `description` TEXT NOT NULL,
+    `evidence_data` TEXT NOT NULL,
+    `suggested_action` TEXT NULL,
+    `period_start` DATE NOT NULL,
+    `period_end` DATE NOT NULL,
+    `review_status` ENUM('unread', 'read', 'dismissed') NOT NULL DEFAULT 'unread',
+    `generated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    INDEX `idx_insights_user_period` (`user_id`, `period_start`, `period_end`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 15. Import Jobs Table
+CREATE TABLE `import_jobs` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `import_type` VARCHAR(50) NOT NULL DEFAULT 'expenses',
+    `filename` VARCHAR(255) NOT NULL,
+    `total_rows` INT NOT NULL DEFAULT 0,
+    `successful_rows` INT NOT NULL DEFAULT 0,
+    `failed_rows` INT NOT NULL DEFAULT 0,
+    `status` ENUM('pending', 'completed', 'failed') NOT NULL DEFAULT 'completed',
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `completed_at` TIMESTAMP NULL,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    INDEX `idx_importjobs_user` (`user_id`, `created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 16. Import Errors Table
+CREATE TABLE `import_errors` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `import_job_id` INT NOT NULL,
+    `row_number` INT NOT NULL,
+    `error_message` TEXT NOT NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`import_job_id`) REFERENCES `import_jobs`(`id`) ON DELETE CASCADE,
+    INDEX `idx_importerrors_job` (`import_job_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 17. Notifications Table
+CREATE TABLE `notifications` (
+    `id` INT AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `title` VARCHAR(150) NOT NULL,
+    `message` TEXT NOT NULL,
+    `notification_type` VARCHAR(50) NOT NULL DEFAULT 'info',
+    `read_at` TIMESTAMP NULL,
+    `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    INDEX `idx_notif_user_read` (`user_id`, `read_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 SET FOREIGN_KEY_CHECKS = 1;
