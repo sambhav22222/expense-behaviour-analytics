@@ -1,0 +1,374 @@
+/**
+ * Expense Behaviour Analytical Platform (EBAP)
+ * Custom Modern Light Theme & Glassmorphism Styling
+ */
+
+:root {
+    --ebap-primary: #4f46e5;
+    --ebap-primary-hover: #4338ca;
+    --ebap-primary-light: #eef2ff;
+    --ebap-secondary: #0d9488;
+    --ebap-success: #10b981;
+    --ebap-warning: #f59e0b;
+    --ebap-danger: #ef4444;
+    --ebap-info: #0284c7;
+    --ebap-bg: #f8fafc;
+    --ebap-card-bg: #ffffff;
+    --ebap-card-border: rgba(226, 232, 240, 0.85);
+    --ebap-text-main: #1e293b;
+    --ebap-text-muted: #64748b;
+    --ebap-sidebar-width: 260px;
+    --ebap-topbar-height: 64px;
+    --ebap-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --ebap-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    --ebap-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--ebap-bg);
+    color: var(--ebap-text-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Glassmorphic Cards */
+.ebap-card {
+    background: var(--ebap-card-bg);
+    border: 1px solid var(--ebap-card-border);
+    border-radius: 14px;
+    box-shadow: var(--ebap-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ebap-card:hover {
+    box-shadow: var(--ebap-shadow-lg);
+}
+
+.ebap-card-glass {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+/* Metric / Stat Cards */
+.stat-card {
+    padding: 20px 22px;
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid var(--ebap-card-border);
+    box-shadow: var(--ebap-shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card .stat-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+}
+
+.stat-card .stat-label {
+    font-size: 0.825rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ebap-text-muted);
+}
+
+.stat-card .stat-value {
+    font-size: 1.55rem;
+    font-weight: 700;
+    color: var(--ebap-text-main);
+    margin: 4px 0 2px 0;
+    line-height: 1.2;
+}
+
+.stat-card .stat-sub {
+    font-size: 0.8rem;
+    color: var(--ebap-text-muted);
+}
+
+/* Sidebar Layout */
+#ebap-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+#ebap-sidebar {
+    width: var(--ebap-sidebar-width);
+    background: #ffffff;
+    border-right: 1px solid var(--ebap-card-border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1030;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#ebap-sidebar .brand-header {
+    height: var(--ebap-topbar-height);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--ebap-card-border);
+}
+
+#ebap-sidebar .sidebar-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 12px;
+}
+
+.nav-section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #94a3b8;
+    padding: 12px 14px 4px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 9px 14px;
+    color: #475569;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 9px;
+    margin-bottom: 3px;
+    transition: all 0.15s ease-in-out;
+}
+
+.sidebar-link i {
+    font-size: 1.15rem;
+    margin-right: 12px;
+    width: 22px;
+    text-align: center;
+    color: #64748b;
+}
+
+.sidebar-link:hover {
+    background-color: #f1f5f9;
+    color: var(--ebap-primary);
+}
+
+.sidebar-link:hover i {
+    color: var(--ebap-primary);
+}
+
+.sidebar-link.active {
+    background-color: var(--ebap-primary-light);
+    color: var(--ebap-primary);
+    font-weight: 600;
+}
+
+.sidebar-link.active i {
+    color: var(--ebap-primary);
+}
+
+/* Main Content Area */
+#ebap-main {
+    flex: 1;
+    margin-left: var(--ebap-sidebar-width);
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#ebap-topbar {
+    height: var(--ebap-topbar-height);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--ebap-card-border);
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+}
+
+.content-wrapper {
+    flex: 1;
+    padding: 24px;
+}
+
+/* Primary Button Styles */
+.btn-ebap {
+    background-color: var(--ebap-primary);
+    border-color: var(--ebap-primary);
+    color: #ffffff;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+}
+
+.btn-ebap:hover, .btn-ebap:focus {
+    background-color: var(--ebap-primary-hover);
+    border-color: var(--ebap-primary-hover);
+    color: #ffffff;
+}
+
+.btn-ebap-outline {
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 8px 16px;
+}
+
+.btn-ebap-outline:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a;
+}
+
+/* Category Badges & Indicators */
+.category-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.775rem;
+    font-weight: 600;
+}
+
+.category-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+/* Insight Cards */
+.insight-card {
+    border-left: 4px solid var(--ebap-primary);
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    border-top: 1px solid var(--ebap-card-border);
+    border-right: 1px solid var(--ebap-card-border);
+    border-bottom: 1px solid var(--ebap-card-border);
+    box-shadow: var(--ebap-shadow-sm);
+}
+
+.insight-card.insight-warning { border-left-color: var(--ebap-warning); }
+.insight-card.insight-danger { border-left-color: var(--ebap-danger); }
+.insight-card.insight-success { border-left-color: var(--ebap-success); }
+.insight-card.insight-info { border-left-color: var(--ebap-info); }
+
+.insight-calc-box {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.8rem;
+    color: #334155;
+    margin-top: 8px;
+}
+
+/* Progress Bars */
+.ebap-progress {
+    height: 8px;
+    border-radius: 6px;
+    background-color: #e2e8f0;
+    overflow: hidden;
+}
+
+/* Responsive Table */
+.ebap-table-container {
+    background: #ffffff;
+    border: 1px solid var(--ebap-card-border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--ebap-shadow-sm);
+}
+
+.table.ebap-table {
+    margin-bottom: 0;
+}
+
+.table.ebap-table th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-size: 0.775rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 12px 16px;
+}
+
+.table.ebap-table td {
+    padding: 14px 16px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.885rem;
+}
+
+.table.ebap-table tr:hover td {
+    background-color: #f8fafc;
+}
+
+/* Mobile Sidebar & Layout Adjustments */
+@media (max-width: 991.98px) {
+    #ebap-sidebar {
+        transform: translateX(-100%);
+    }
+    #ebap-sidebar.show {
+        transform: translateX(0);
+        box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+    }
+    #ebap-main {
+        margin-left: 0;
+    }
+    .content-wrapper {
+        padding: 16px;
+    }
+    .stat-card .stat-value {
+        font-size: 1.35rem;
+    }
+}
+
+/* Print Stylesheet for Reports & Academic Submissions */
+@media print {
+    #ebap-sidebar, #ebap-topbar, .no-print, .btn, .pagination, .date-filter-bar {
+        display: none !important;
+    }
+    #ebap-main {
+        margin-left: 0 !important;
+        padding: 0 !important;
+    }
+    .content-wrapper {
+        padding: 0 !important;
+    }
+    .ebap-card, .stat-card {
+        box-shadow: none !important;
+        border: 1px solid #94a3b8 !important;
+        page-break-inside: avoid;
+    }
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt;
+    }
+}

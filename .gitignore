@@ -1,0 +1,33 @@
+# EBAP .gitignore
+
+# Environment and sensitive credentials
+.env
+.env.local
+.env.*.local
+*.log
+
+# User uploaded and exported financial files
+uploads/*
+!uploads/.gitkeep
+storage/*
+!storage/.gitkeep
+exports/*
+*.csv
+*.xlsx
+*.sql.gz
+
+# IDE and Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# PHP and server temporary files
+tmp/
+temp/
+*.tmp
+vendor/
+composer.lock
