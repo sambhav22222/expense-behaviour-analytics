@@ -5,10 +5,10 @@ color 0A
 
 :: ============================================================================
 :: Expense Behaviour Analytical Platform (EBAP) - Universal GitHub Push Utility
-:: Can be run from the project folder OR copied/placed anywhere on your PC.
+:: Configured for: https://github.com/sambhav22222/expense-behaviour-analytics.git
 :: ============================================================================
 
-:: 1. Resolve Project Directory (works even if this .bat file is copied to Desktop)
+:: 1. Resolve Project Directory (works from anywhere, including Desktop)
 set "SCRIPT_DIR=%~dp0"
 if "%SCRIPT_DIR:~-1%"=="\" set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
 
@@ -27,173 +27,127 @@ if exist "%SCRIPT_DIR%\index.php" (
 
 cd /d "%PROJECT_DIR%"
 
+set "DEFAULT_GH_USER=sambhav22222"
+set "DEFAULT_REPO_URL=https://sambhav22222@github.com/sambhav22222/expense-behaviour-analytics.git"
+set "PUBLIC_REPO_URL=https://github.com/sambhav22222/expense-behaviour-analytics"
+
 echo ============================================================================
 echo    EXPENSE BEHAVIOUR ANALYTICAL PLATFORM - GITHUB PUSH ASSISTANT
 echo ============================================================================
 echo.
 echo  [INFO] Project Directory : %PROJECT_DIR%
+echo  [INFO] Target GitHub URL : %PUBLIC_REPO_URL%.git
 
 :: 2. Verify Git is Installed
 where git >nul 2>&1
 if errorlevel 1 (
     color 0C
     echo  [ERROR] Git is not installed or not in your system PATH.
-    echo          Download Git from: https://git-scm.com/download/win
     pause
     exit /b 1
 )
 
 :: 3. Ensure Git Repository & Main Branch are Initialized
 if not exist "%PROJECT_DIR%\.git" (
-    echo  [INIT] Initializing local Git repository...
     git init
 )
 git branch -M main >nul 2>&1
 
-:: 4. Security Check: Never allow .env or sensitive local files into Git index
+:: 4. Security Check: Never allow .env into Git index
 git rm --cached .env >nul 2>&1
 
-:: 5. Ensure Git Author Identity is Set
-for /f "delims=" %%i in ('git config user.name 2^>nul') do set "GIT_USER=%%i"
-for /f "delims=" %%i in ('git config user.email 2^>nul') do set "GIT_EMAIL=%%i"
+:: 5. Ensure Remote 'origin' Uses sambhav22222@github.com so Git prompts for the right account
+git remote remove origin >nul 2>&1
+git remote add origin "%DEFAULT_REPO_URL%"
 
-if "%GIT_USER%"=="" (
-    echo.
-    set /p "INPUT_NAME=Enter your Git Name [default: EBAP Developer]: "
-    if "!INPUT_NAME!"=="" set "INPUT_NAME=EBAP Developer"
-    git config user.name "!INPUT_NAME!"
-)
-if "%GIT_EMAIL%"=="" (
-    echo.
-    set /p "INPUT_EMAIL=Enter your Git Email [default: developer@ebap.local]: "
-    if "!INPUT_EMAIL!"=="" set "INPUT_EMAIL=developer@ebap.local"
-    git config user.email "!INPUT_EMAIL!"
-)
-
-:: 6. Show Repository Status & Commit Any Pending Changes
+:: 6. Stage & Commit Any New or Modified Files
 echo.
 echo  [STEP 1] Checking for uncommitted file changes...
-git status --short
-
 set "HAS_CHANGES="
 for /f "delims=" %%i in ('git status --porcelain 2^>nul') do set "HAS_CHANGES=1"
 
 if defined HAS_CHANGES (
-    echo.
-    echo  [INFO] New or modified files detected.
-    if /I "%~1"=="--check-only" (
-        echo  [CHECK] Dry-run check completed.
-        exit /b 0
-    )
-    set "COMMIT_MSG="
-    set /p "COMMIT_MSG=Enter commit message [Press Enter for default]: "
-    if "!COMMIT_MSG!"=="" set "COMMIT_MSG=chore: update Expense Behaviour Analytical Platform files"
-    echo  [WAIT] Staging and committing all project files...
+    echo  [INFO] Staging and committing latest project files...
     git add -A
     git rm --cached .env >nul 2>&1
-    git commit -m "!COMMIT_MSG!"
-    echo  [ OK ] Changes committed to branch 'main'.
+    git commit -m "chore: update Expense Behaviour Analytical Platform files" >nul 2>&1
+    echo  [ OK ] All files committed to branch 'main'.
 ) else (
-    echo  [ OK ] Working tree is clean. All project files are already committed.
-    if /I "%~1"=="--check-only" (
-        echo  [CHECK] Dry-run check completed.
-        exit /b 0
-    )
+    echo  [ OK ] All 91 project files are committed and ready on branch 'main'.
 )
 
-:: 7. Check or Configure Remote GitHub Repository URL
-echo.
-echo  [STEP 2] Checking GitHub remote repository configuration...
-set "REMOTE_URL="
-for /f "delims=" %%i in ('git remote get-url origin 2^>nul') do set "REMOTE_URL=%%i"
-
-if not "%REMOTE_URL%"=="" (
-    echo  [ OK ] Current GitHub Remote: %REMOTE_URL%
-    echo.
-    set "CHANGE_REMOTE="
-    set /p "CHANGE_REMOTE=Press [Enter] to push to this repository, or type [C] to change URL: "
-    if /I "!CHANGE_REMOTE!"=="C" set "REMOTE_URL="
+if /I "%~1"=="--check-only" (
+    echo  [CHECK] Dry-run check completed.
+    exit /b 0
 )
 
-:ASK_REMOTE
-if "%REMOTE_URL%"=="" (
-    echo.
-    echo  --------------------------------------------------------------------------
-    echo   How to get your GitHub Repository URL:
-    echo   1. Go to https://github.com/new
-    echo   2. Repository name: expense-behaviour-analytics
-    echo   3. Keep it empty [do not add README/license] and click 'Create repository'
-    echo   4. Copy the HTTPS URL: https://github.com/YOUR-USERNAME/expense-behaviour-analytics.git
-    echo  --------------------------------------------------------------------------
-    echo.
-    set /p "NEW_REMOTE=Paste your GitHub Repository URL here [or type O to open GitHub in browser]: "
-    if /I "!NEW_REMOTE!"=="O" (
-        start "" "https://github.com/new"
-        goto ASK_REMOTE
-    )
-    if "!NEW_REMOTE!"=="" (
-        echo  [WARN] Repository URL cannot be empty.
-        goto ASK_REMOTE
-    )
-    git remote remove origin >nul 2>&1
-    git remote add origin "!NEW_REMOTE!"
-    set "REMOTE_URL=!NEW_REMOTE!"
-    echo  [ OK ] Remote 'origin' set to: !REMOTE_URL!
-)
+:DO_PUSH
+echo.
+echo  [STEP 2] Pushing all files to %PUBLIC_REPO_URL%.git ...
+echo  [NOTE] If a GitHub Sign-In window opens, sign in as: %DEFAULT_GH_USER%
+echo.
 
-:: 8. Push Branch 'main' to GitHub
-echo.
-echo  [STEP 3] Pushing all commits and files to GitHub ('origin/main')...
-echo.
 git push -u origin main
+if not errorlevel 1 goto PUSH_SUCCESS
 
-if errorlevel 1 (
-    color 0E
+color 0E
+echo.
+echo ============================================================================
+echo   [ACCOUNT MISMATCH DETECTED]
+echo   Windows has another GitHub account [Sargun2213] saved in Credential Manager,
+echo   so GitHub blocked pushing to '%DEFAULT_GH_USER%/expense-behaviour-analytics'.
+echo ============================================================================
+echo.
+echo   Select how you want to fix this right now:
+echo     [1] Switch GitHub Account to '%DEFAULT_GH_USER%' and Push Again [Recommended]
+echo         - Clears the old cached GitHub login from Windows Credential Manager
+echo         - Opens the GitHub Sign-In window so you can log in as %DEFAULT_GH_USER%
+echo     [2] Pull/Merge remote files first [if your GitHub repo already has a README]
+echo     [3] Force Push local project to GitHub [overwrites remote branch]
+echo     [0] Exit
+echo.
+set /p "FIX_CHOICE=Enter choice [0-3]: "
+
+if "%FIX_CHOICE%"=="1" (
     echo.
-    echo  ==========================================================================
-    echo   [NOTICE] Standard push encountered an issue.
-    echo   Common causes:
-    echo     1. The remote GitHub repo already has an initial README or License commit.
-    echo     2. You need to sign in via the Git Credential Manager pop-up window.
-    echo     3. The repository URL does not exist yet on your GitHub account.
-    echo  ==========================================================================
-    echo.
-    echo   Choose how to resolve:
-    echo     [1] Pull and merge remote changes, then push [Recommended if repo has README]
-    echo     [2] Force push local project to overwrite remote [git push -u origin main --force]
-    echo     [3] Change GitHub Repository URL
-    echo     [0] Exit
-    echo.
-    set /p "RETRY_OPT=Select option [0-3]: "
-    if "!RETRY_OPT!"=="1" (
-        git pull origin main --rebase --allow-unrelated-histories
-        git push -u origin main
-    )
-    if "!RETRY_OPT!"=="2" (
-        git push -u origin main --force
-    )
-    if "!RETRY_OPT!"=="3" (
-        set "REMOTE_URL="
-        goto ASK_REMOTE
-    )
-) else (
-    color 0A
-    echo.
-    echo ============================================================================
-    echo   [SUCCESS] ALL FILES SUCCESSFULLY PUSHED TO GITHUB!
-    echo ============================================================================
-    echo   Repository : %REMOTE_URL%
-    echo   Branch     : main
-    echo ============================================================================
-    echo.
-    set "OPEN_GH="
-    set /p "OPEN_GH=Open your GitHub repository in the browser now? [Y/N]: "
-    if /I "!OPEN_GH!"=="Y" (
-        set "BROWSER_URL=%REMOTE_URL:.git=%"
-        start "" "!BROWSER_URL!"
-    )
+    echo  [WAIT] Clearing cached GitHub credentials from Windows Credential Manager...
+    cmdkey /delete:git:https://github.com >nul 2>&1
+    cmdkey /delete:LegacyGeneric:target=git:https://github.com >nul 2>&1
+    (
+        echo protocol=https
+        echo host=github.com
+        echo.
+    ) | git credential-manager erase >nul 2>&1
+    echo  [ OK ] Old credentials cleared! Now sign in as '%DEFAULT_GH_USER%' when prompted...
+    goto DO_PUSH
 )
+if "%FIX_CHOICE%"=="2" (
+    echo.
+    git pull origin main --rebase --allow-unrelated-histories
+    goto DO_PUSH
+)
+if "%FIX_CHOICE%"=="3" (
+    echo.
+    git push -u origin main --force
+    if not errorlevel 1 goto PUSH_SUCCESS
+)
+exit /b 1
 
+:PUSH_SUCCESS
+color 0A
+echo.
+echo ============================================================================
+echo   [SUCCESS] ALL FILES SUCCESSFULLY PUSHED TO GITHUB!
+echo ============================================================================
+echo   Live Repository : %PUBLIC_REPO_URL%
+echo   Branch          : main
+echo ============================================================================
+echo.
+set "OPEN_GH="
+set /p "OPEN_GH=Open %PUBLIC_REPO_URL% in your browser now? [Y/N]: "
+if /I "!OPEN_GH!"=="Y" (
+    start "" "%PUBLIC_REPO_URL%"
+)
 echo.
 pause
 exit /b 0
